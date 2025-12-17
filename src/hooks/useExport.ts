@@ -1,6 +1,5 @@
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { trim } from 'lodash'
 import { saveAs } from 'file-saver'
 import pptxgen from 'pptxgenjs'
 import tinycolor from 'tinycolor2'
@@ -60,10 +59,57 @@ export default () => {
       })
     }, 200)
   }
+
+  // 导出图片版PPTX
+  const exportImagePPTX = (domRefs: NodeListOf<Element>) => {
+    exporting.value = true
+    
+    setTimeout(() => {
+      const pptx = new pptxgen()
+
+      const config: ExportImageConfig = {
+        quality: 1,
+        width: 1600,
+      }
+
+      const promiseArr = []
+      for (const domRef of domRefs) {
+        const foreignObjectSpans = domRef.querySelectorAll('foreignObject [xmlns]')
+        foreignObjectSpans.forEach(spanRef => spanRef.removeAttribute('xmlns'))
+
+        const promiseFunc = () => toJpeg((domRef as HTMLElement), config)
+        promiseArr.push(promiseFunc)
+      }
+
+      Promise.all(promiseArr.map(func => func())).then(imgs => {
+        for (const data of imgs) {
+          const pptxSlide = pptx.addSlide()
+          pptxSlide.addImage({
+            data,
+            x: 0,
+            y: 0,
+            w: viewportSize.value / ratioPx2Inch.value,
+            h: viewportSize.value * viewportRatio.value / ratioPx2Inch.value,
+          })
+        }
+        pptx.writeFile({ fileName: `${title.value}.pptx` }).then(() => exporting.value = false)
+      }).catch(() => {
+        exporting.value = false
+        message.error('导出失败')
+      })
+    }, 200)
+  }
   
   // 导出pptist文件（特有 .pptist 后缀文件）
   const exportSpecificFile = (_slides: Slide[]) => {
-    const blob = new Blob([encrypt(JSON.stringify(_slides))], { type: '' })
+    const json = {
+      title: title.value,
+      width: viewportSize.value,
+      height: viewportSize.value * viewportRatio.value,
+      theme: theme.value,
+      slides: _slides,
+    }
+    const blob = new Blob([encrypt(JSON.stringify(json))], { type: '' })
     saveAs(blob, `${title.value}.pptist`)
   }
   
@@ -82,9 +128,11 @@ export default () => {
 
   // 格式化颜色值为 透明度 + HexString，供pptxgenjs使用
   const formatColor = (_color: string) => {
-    if (!_color) return {
-      alpha: 0,
-      color: '#000000',
+    if (!_color) {
+      return {
+        alpha: 0,
+        color: '#000000',
+      }
     }
 
     const c = tinycolor(_color)
@@ -122,9 +170,11 @@ export default () => {
         if (styleAttr && styleAttr.value) {
           const styleArr = styleAttr.value.split(';')
           for (const styleItem of styleArr) {
-            const [_key, _value] = styleItem.split(': ')
-            const [key, value] = [trim(_key), trim(_value)]
-            if (key && value) styleObj[key] = value
+            const match = styleItem.match(/([^:]+):\s*(.+)/)
+            if (match) {
+              const [key, value] = [match[1].trim(), match[2].trim()]
+              if (key && value) styleObj[key] = value
+            }
           }
         }
 
@@ -908,6 +958,7 @@ export default () => {
   return {
     exporting,
     exportImage,
+    exportImagePPTX,
     exportJSON,
     exportSpecificFile,
     exportPPTX,

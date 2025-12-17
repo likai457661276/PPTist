@@ -35,7 +35,9 @@ export interface MainState {
   showSelectPanel: boolean
   showSearchPanel: boolean
   showNotesPanel: boolean
+  showSymbolPanel: boolean
   showMarkupPanel: boolean
+  showImageLibPanel: boolean
   showAIPPTDialog: boolean
 }
 
@@ -71,7 +73,9 @@ export const useMainStore = defineStore('main', {
     showSelectPanel: false, // 打开选择面板
     showSearchPanel: false, // 打开查找替换面板
     showNotesPanel: false, // 打开批注面板
+    showSymbolPanel: false, // 打开符号面板
     showMarkupPanel: false, // 打开类型标注面板
+    showImageLibPanel: false, // 打开图片库面板
     showAIPPTDialog: false, // 打开AIPPT创建窗口
   }),
 
@@ -199,8 +203,16 @@ export const useMainStore = defineStore('main', {
       this.showNotesPanel = show
     },
 
+    setSymbolPanelState(show: boolean) {
+      this.showSymbolPanel = show
+    },
+
     setMarkupPanelState(show: boolean) {
       this.showMarkupPanel = show
+    },
+
+    setImageLibPanelState(show: boolean) {
+      this.showImageLibPanel = show
     },
 
     setAIPPTDialogState(show: boolean) {

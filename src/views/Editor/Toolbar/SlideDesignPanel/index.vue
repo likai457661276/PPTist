@@ -93,7 +93,7 @@
     </div>
 
     <div class="row">
-      <Button style="flex: 1;" @click="applyBackgroundAllSlide()">应用背景到全部</Button>
+      <Button style="flex: 1;" @click="applyBackgroundAllSlide()"><IconCheck /> 应用背景到全部</Button>
     </div>
 
     <Divider />
@@ -134,6 +134,7 @@
         :value="theme.fontName"
         search
         searchLabel="搜索字体"
+        autofocus
         @update:value="value => updateTheme({ fontName: value as string })"
         :options="FONTS"
       />
@@ -249,11 +250,15 @@
     </template>
 
     <div class="row">
-      <Button style="flex: 1;" @click="applyThemeToAllSlides(moreThemeConfigsVisible)">应用主题到全部</Button>
+      <Button style="flex: 1;" @click="applyThemeToAllSlides(moreThemeConfigsVisible)"><IconCheck /> 应用主题到全部</Button>
     </div>
 
     <div class="row">
-      <Button style="flex: 1;" @click="themeStylesExtractVisible = true">从幻灯片提取主题</Button>
+      <Button style="flex: 1;" @click="applyFontToAllSlides(theme.fontName)"><IconCheck /> 全局统一字体</Button>
+    </div>
+
+    <div class="row">
+      <Button style="flex: 1;" @click="themeStylesExtractVisible = true"><IconPlatte /> 从幻灯片提取主题</Button>
     </div>
 
     <Divider />
@@ -361,6 +366,7 @@ const { addHistorySnapshot } = useHistorySnapshot()
 const {
   applyPresetTheme,
   applyThemeToAllSlides,
+  applyFontToAllSlides,
 } = useSlideTheme()
 
 watch(slideIndex, () => {

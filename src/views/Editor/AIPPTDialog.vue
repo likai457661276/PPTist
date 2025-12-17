@@ -2,7 +2,7 @@
   <div class="aippt-dialog">
     <div class="header">
       <span class="title">AIPPT</span>
-      <span class="subtite" v-if="step === 'template'">从下方挑选合适的模板，开始生成PPT</span>
+      <span class="subtite" v-if="step === 'template'">从下方挑选合适的模板生成PPT，或<span class="local" v-tooltip="'上传.pptist格式模板文件'" @click="uploadLocalTemplate()">使用本地模板生成</span></span>
       <span class="subtite" v-else-if="step === 'outline'">确认下方内容大纲（点击编辑内容，右键添加/删除大纲项），开始选择模板</span>
       <span class="subtite" v-else>在下方输入您的PPT主题，并适当补充信息，如行业、岗位、学科、用途等</span>
     </div>
@@ -17,23 +17,72 @@
       >
         <template #suffix>
           <span class="count">{{ keyword.length }} / 50</span>
-          <span class="language" v-tooltip="'切换语言'" @click="language = language === 'zh' ? 'en' : 'zh'">{{ language === 'zh' ? '中' : '英' }}</span>
           <div class="submit" type="primary" @click="createOutline()"><IconSend class="icon" /> AI 生成</div>
         </template>
       </Input>
       <div class="recommends">
         <div class="recommend" v-for="(item, index) in recommends" :key="index" @click="setKeyword(item)">{{ item }}</div>
       </div>
-      <div class="model-selector">
-        <div class="label">选择AI模型：</div>
-        <Select 
-          style="width: 160px;"
-          v-model:value="model"
-          :options="[
-            { label: 'GLM-4-Flash', value: 'GLM-4-Flash' },
-            { label: 'GLM-4-FlashX', value: 'GLM-4-FlashX' },
-          ]"
-        />
+      <div class="configs">
+        <div class="config-item">
+          <div class="label">语言：</div>
+          <Select 
+            class="config-content"
+            style="width: 80px;"
+            v-model:value="language"
+            :options="[
+              { label: '中文', value: '中文' },
+              { label: '英文', value: 'English' },
+              { label: '日文', value: '日本語' },
+            ]"
+          />
+        </div>
+        <div class="config-item">
+          <div class="label">风格：</div>
+          <Select 
+            class="config-content"
+            style="width: 80px;"
+            v-model:value="style"
+            :options="[
+              { label: '通用', value: '通用' },
+              { label: '学术风', value: '学术风' },
+              { label: '职场风', value: '职场风' },
+              { label: '教育风', value: '教育风' },
+              { label: '营销风', value: '营销风' },
+            ]"
+          />
+        </div>
+        <div class="config-item">
+          <div class="label">模型：</div>
+          <Select 
+            class="config-content"
+            style="width: 190px;"
+            v-model:value="model"
+            :options="[
+              { label: 'GLM-4.5-Flash', value: 'GLM-4.5-Flash' },
+              { label: 'Doubao-Seed-1.6-flash', value: 'ark-doubao-seed-1.6-flash' },
+            ]"
+          />
+        </div>
+        <div class="config-item">
+          <div class="label">配图：</div>
+          <Select 
+            class="config-content"
+            style="width: 100px;"
+            v-model:value="img"
+            :options="[
+              { label: '无', value: '' },
+              { label: '模拟测试', value: 'test' },
+              { label: 'AI搜图', value: 'ai-search', disabled: true },
+              { label: 'AI生图', value: 'ai-create', disabled: true },
+            ]"
+          />
+        </div>
+      </div>
+      <div class="configs" v-if="!isEmptySlide">
+        <div class="config-item">
+          <Checkbox v-model:value="overwrite">覆盖已有幻灯片</Checkbox>
+        </div>
       </div>
     </template>
     <div class="preview" v-if="step === 'outline'">
@@ -68,46 +117,55 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import api from '@/services'
 import useAIPPT from '@/hooks/useAIPPT'
+import useSlideHandler from '@/hooks/useSlideHandler'
 import type { AIPPTSlide } from '@/types/AIPPT'
 import type { Slide, SlideTheme } from '@/types/slides'
 import message from '@/utils/message'
+import { decrypt } from '@/utils/crypto'
 import { useMainStore, useSlidesStore } from '@/store'
 import Input from '@/components/Input.vue'
 import Button from '@/components/Button.vue'
 import Select from '@/components/Select.vue'
 import FullscreenSpin from '@/components/FullscreenSpin.vue'
 import OutlineEditor from '@/components/OutlineEditor.vue'
+import Checkbox from '@/components/Checkbox.vue'
 
 const mainStore = useMainStore()
-const slideStore = useSlidesStore()
-const { templates } = storeToRefs(slideStore)
-const { AIPPT, getMdContent } = useAIPPT()
+const slidesStore = useSlidesStore()
+const { templates } = storeToRefs(slidesStore)
 
-const language = ref<'zh' | 'en'>('zh')
+const { resetSlides, isEmptySlide } = useSlideHandler()
+const { AIPPT, presetImgPool, getMdContent } = useAIPPT()
+
+const language = ref('中文')
+const style = ref('通用')
+const img = ref('')
 const keyword = ref('')
 const outline = ref('')
 const selectedTemplate = ref('template_1')
 const loading = ref(false)
 const outlineCreating = ref(false)
-const outlineRef = ref<HTMLElement>()
-const inputRef = ref<InstanceType<typeof Input>>()
+const overwrite = ref(true)
 const step = ref<'setup' | 'outline' | 'template'>('setup')
-const model = ref('GLM-4-Flash')
+const model = ref('GLM-4.5-Flash')
+const outlineRef = useTemplateRef<HTMLElement>('outlineRef')
+const inputRef = useTemplateRef<InstanceType<typeof Input>>('inputRef')
 
 const recommends = ref([
-  '大学生职业生涯规划',
-  '公司年会策划方案',
+  '2025科技前沿动态',
   '大数据如何改变世界',
   '餐饮市场调查与研究',
   'AIGC在教育领域的应用',
-  '5G技术如何改变我们的生活',
   '社交媒体与品牌营销',
+  '5G技术如何改变我们的生活',
   '年度工作总结与展望',
   '区块链技术及其应用',
+  '大学生职业生涯规划',
+  '公司年会策划方案',
 ]) 
 
 onMounted(() => {
@@ -127,7 +185,15 @@ const createOutline = async () => {
   loading.value = true
   outlineCreating.value = true
   
-  const stream = await api.AIPPT_Outline(keyword.value, language.value, model.value)
+  const stream = await api.AIPPT_Outline({
+    content: keyword.value,
+    language: language.value,
+    model: model.value,
+  })
+  if (typeof stream === 'object' && stream.state === -1) {
+    loading.value = false
+    return message.error('该模型API的并发数过高，请更换其他模型重试')
+  }
 
   loading.value = false
   step.value = 'outline'
@@ -157,13 +223,31 @@ const createOutline = async () => {
   readStream()
 }
 
-const createPPT = async () => {
+const createPPT = async (template?: { slides: Slide[], theme: SlideTheme }) => {
   loading.value = true
 
-  const stream = await api.AIPPT(outline.value, language.value, model.value)
-  const templateData = await api.getFileData(selectedTemplate.value)
-  const templateSlides: Slide[] = templateData.slides
-  const templateTheme: SlideTheme = templateData.theme
+  if (overwrite.value) resetSlides()
+
+  const stream = await api.AIPPT({
+    content: outline.value,
+    language: language.value,
+    style: style.value,
+    model: model.value,
+  })
+  if (typeof stream === 'object' && stream.state === -1) {
+    loading.value = false
+    return message.error('该模型API的并发数过高，请更换其他模型重试')
+  }
+
+  if (img.value === 'test') {
+    const imgs = await api.getMockData('imgs')
+    presetImgPool(imgs)
+  }
+
+  let templateData = template
+  if (!templateData) templateData = await api.getMockData(selectedTemplate.value)
+  const templateSlides: Slide[] = templateData!.slides
+  const templateTheme: SlideTheme = templateData!.theme
 
   const reader: ReadableStreamDefaultReader = stream.body.getReader()
   const decoder = new TextDecoder('utf-8')
@@ -173,14 +257,17 @@ const createPPT = async () => {
       if (done) {
         loading.value = false
         mainStore.setAIPPTDialogState(false)
-        slideStore.setTheme(templateTheme)
+        slidesStore.setTheme(templateTheme)
         return
       }
   
       const chunk = decoder.decode(value, { stream: true })
       try {
-        const slide: AIPPTSlide = JSON.parse(chunk)
-        AIPPT(templateSlides, [slide])
+        const text = chunk.replace('```json', '').replace('```', '').trim()
+        if (text) {
+          const slide: AIPPTSlide = JSON.parse(chunk)
+          AIPPT(templateSlides, [slide])
+        }
       }
       catch (err) {
         // eslint-disable-next-line
@@ -191,6 +278,29 @@ const createPPT = async () => {
     })
   }
   readStream()
+}
+
+const uploadLocalTemplate = () => {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.pptist'
+  input.click()
+  input.addEventListener('change', e => {
+    const file = (e.target as HTMLInputElement).files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.addEventListener('load', () => {
+        try {
+          const { slides, theme } = JSON.parse(decrypt(reader.result as string))
+          createPPT({ slides, theme })
+        }
+        catch {
+          message.error('上传的模板文件数据异常，请重新上传或使用预置模板')
+        }
+      })
+      reader.readAsText(file)
+    }
+  })
 }
 </script>
 
@@ -215,6 +325,12 @@ const createPPT = async () => {
   .subtite {
     color: #888;
     font-size: 12px;
+
+    .local {
+      color: $themeColor;
+      text-decoration: underline;
+      cursor: pointer;
+    }
   }
 }
 .preview {
@@ -245,20 +361,17 @@ const createPPT = async () => {
 }
 .select-template {
   .templates {
+    max-height: 450px;
+    overflow: auto;
     display: flex;
     margin-bottom: 10px;
+    padding-right: 5px;
     @include flex-grid-layout();
   
     .template {
       border: 2px solid $borderColor;
       border-radius: $borderRadius;
-      width: 304px;
-      height: 172.75px;
-      margin-bottom: 12px;
-
-      &:not(:nth-child(2n)) {
-        margin-right: 12px;
-      }
+      @include flex-grid-layout-children(2, 49%);
 
       &.selected {
         border-color: $themeColor;
@@ -266,6 +379,7 @@ const createPPT = async () => {
   
       img {
         width: 100%;
+        min-height: 180px;
       }
     }
   }
@@ -278,18 +392,6 @@ const createPPT = async () => {
       width: 120px;
       margin: 0 5px;
     }
-  }
-}
-.configs {
-  margin-top: 5px;
-  display: flex;
-  justify-content: space-between;
-
-  .items {
-    display: flex;
-  }
-  .item {
-    margin-right: 5px;
   }
 }
 .recommends {
@@ -311,22 +413,21 @@ const createPPT = async () => {
     }
   }
 }
-.model-selector {
-  margin-top: 10px;
-  font-size: 13px;
+.configs {
+  margin-top: 15px;
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+
+  .config-item {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+  }
 }
 .count {
   font-size: 12px;
   color: #999;
   margin-right: 10px;
-}
-.language {
-  font-size: 12px;
-  margin-right: 10px;
-  color: $themeColor;
-  cursor: pointer;
 }
 .submit {
   height: 20px;
@@ -335,7 +436,7 @@ const createPPT = async () => {
   color: #fff;
   display: flex;
   align-items: center;
-  padding: 0 5px;
+  padding: 0 8px 0 6px;
   border-radius: $borderRadius;
   cursor: pointer;
 
@@ -346,6 +447,31 @@ const createPPT = async () => {
   .icon {
     font-size: 15px;
     margin-right: 3px;
+  }
+}
+
+@media screen and (width <= 800px) {
+  .configs {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+
+    .config-item {
+      margin-top: 8px;
+
+      .label {
+        flex-shrink: 0;
+      }
+
+      .config-content {
+        width: 100% !important;
+      }
+    }
+  }
+  .select-template {
+    .templates {
+      padding-right: 0;
+    }
   }
 }
 </style>

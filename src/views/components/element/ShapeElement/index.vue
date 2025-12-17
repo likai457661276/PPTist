@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMainStore, useSlidesStore } from '@/store'
 import type { PPTShapeElement, ShapeText } from '@/types/slides'
@@ -188,7 +188,7 @@ const checkEmptyText = () => {
   }
 }
 
-const prosemirrorEditorRef = ref<InstanceType<typeof ProsemirrorEditor>>()
+const prosemirrorEditorRef = useTemplateRef<InstanceType<typeof ProsemirrorEditor>>('prosemirrorEditorRef')
 const startEdit = () => {
   editable.value = true
   nextTick(() => prosemirrorEditorRef.value && prosemirrorEditorRef.value.focus())
@@ -229,17 +229,13 @@ const startEdit = () => {
   }
 }
 .shape-text {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
   display: flex;
   flex-direction: column;
   padding: 10px;
   line-height: 1.2;
   word-break: break-word;
   pointer-events: none;
+  @include absolute-0();
 
   &.editable {
     pointer-events: all;

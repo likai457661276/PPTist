@@ -441,7 +441,9 @@ export interface ChartData {
  * 
  * themeColors: 主题色
  * 
- * textColor?: 文字颜色
+ * textColor?: 坐标和文字颜色
+ * 
+ * lineColor?: 网格颜色
  */
 export interface PPTChartElement extends PPTBaseElement {
   type: 'chart'
@@ -452,6 +454,7 @@ export interface PPTChartElement extends PPTBaseElement {
   outline?: PPTElementOutline
   themeColors: string[]
   textColor?: string
+  lineColor?: string
 }
 
 
@@ -541,7 +544,7 @@ export interface TableTheme {
  * 
  * theme?: 主题
  * 
- * colWidths: 列宽数组，如[30, 50, 20]表示三列宽度分别为30%, 50%, 20%
+ * colWidths: 列宽数组，如[0.3, 0.5, 0.2]表示三列宽度分别占总宽度的30%, 50%, 20%
  * 
  * cellMinHeight: 单元格最小高度
  * 
@@ -768,4 +771,5 @@ export interface SlideTemplate {
   name: string
   id: string
   cover: string
+  origin?: string
 }

@@ -8,7 +8,7 @@
         @click="changeCatalog(item.id)"
       >{{ item.name }}</div>
     </div>
-    <div class="content">
+    <div class="content" v-loading="{ state: loading, text: '加载中...' }">
       <div class="header">
         <div class="types">
           <div class="type" 
@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSlidesStore } from '@/store'
 import type { Slide } from '@/types/slides'
@@ -55,8 +55,9 @@ const emit = defineEmits<{
 
 const slidesStore = useSlidesStore()
 const { templates } = storeToRefs(slidesStore)
+
 const slides = ref<Slide[]>([])
-const listRef = ref<HTMLElement>()
+const listRef = useTemplateRef<HTMLElement>('listRef')
 const types = ref<{
   label: string
   value: string
@@ -71,6 +72,7 @@ const types = ref<{
 const activeType = ref('all')
 
 const activeCatalog = ref('')
+const loading = ref(false)
 
 const insertTemplate = (slide: Slide) => {
   emit('select', slide)
@@ -81,11 +83,15 @@ const insertTemplates = (slides: Slide[]) => {
 }
 
 const changeCatalog = (id: string) => {
+  loading.value = true
   activeCatalog.value = id
-  api.getFileData(activeCatalog.value).then(ret => {
+  api.getMockData(activeCatalog.value).then(ret => {
     slides.value = ret.slides
+    loading.value = false
 
     if (listRef.value) listRef.value.scrollTo(0, 0) 
+  }).catch(() => {
+    loading.value = false
   })
 }
 
@@ -206,6 +212,7 @@ onMounted(() => {
     background-color: rgba($color: #000, $alpha: .25);
     opacity: 0;
     transition: opacity $transitionDelay;
+    border-radius: $borderRadius;
   }
 
   .thumbnail {

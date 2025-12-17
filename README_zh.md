@@ -1,3 +1,16 @@
+<p align="center">
+    <img src='/public/logo.png' />
+</p>
+
+<p align="center">
+    <a href="https://www.github.com/pipipi-pikachu/PPTist/stargazers" target="_black"><img src="https://img.shields.io/github/stars/pipipi-pikachu/PPTist?logo=github" alt="stars" /></a>
+    <a href="https://www.github.com/pipipi-pikachu/PPTist/network/members" target="_black"><img src="https://img.shields.io/github/forks/pipipi-pikachu/PPTist?logo=github" alt="forks" /></a>
+    <a href="https://www.github.com/pipipi-pikachu/PPTist/blob/master/LICENSE" target="_black"><img src="https://img.shields.io/github/license/pipipi-pikachu/PPTist?color=%232DCE89&logo=github" alt="license" /></a>
+    <a href="https://www.typescriptlang.org" target="_black"><img src="https://img.shields.io/badge/language-TypeScript-blue.svg" alt="language"></a>
+    <a href="https://github.com/pipipi-pikachu/PPTist/issues" target="_black"><img src="https://img.shields.io/github/issues-closed/pipipi-pikachu/PPTist.svg" alt="issue"></a>
+    <a href="https://gitee.com/pptist/PPTist" target="_black"><img src="https://gitee.com/pptist/PPTist/badge/star.svg?version=latest" alt="gitee"></a>
+</p>
+
 简体中文 | [English](README.md)
 
 
@@ -13,9 +26,10 @@
 
 
 # 👀 前排提示
-1. 本项目是一个 “Web 幻灯片应用” ，而不是 “低代码平台”、“H5 编辑器”、“图片编辑器” 、“白板应用”等。
+1. 本项目是一个 “Web 幻灯片编辑/演示应用” ，而不是 “低代码平台”、“H5 编辑器”、“图片编辑器” 、“白板应用”等。
 2. 本项目的目标受众是<b>有Web幻灯片开发需求的开发者，需要有基础的web开发经验</b>，提供的链接只是一个演示地址，不提供任何在线服务。你不应该直接将本项目作为工具使用，也不支持开箱即用。如果你只是需要一个服务或工具，可以选择更优秀和成熟的产品，例如：[Slidev](https://sli.dev/)、[revealjs](https://revealjs.com/) 等。
 3. 这里总结了一些[常见问题](/doc/Q&A.md)，第一次提 Issues 和 PR 时，务必提前阅读此文档。
+4. 商用相关请参阅[商业用途](#-商业用途)
 
 
 # 🚀 项目运行
@@ -86,6 +100,7 @@ npm run dev
 - 阴影
 - 透明度
 - 竖向文本
+- AI改写/扩写/缩写
 #### 图片
 - 裁剪（自定义、按形状、按纵横比）
 - 圆角
@@ -119,7 +134,8 @@ npm run dev
 - 数据编辑
 - 背景填充
 - 主题色
-- 坐标文字颜色
+- 坐标轴/坐标文字颜色
+- 网格颜色
 - 堆积模式、平滑曲线等
 #### 表格
 - 行、列添加删除
@@ -173,34 +189,38 @@ npm run dev
 
 
 # 🧮 商业用途
-- 本项目禁止闭源商用，如果你希望将PPTist用于商业项目盈利，请尊重开源，**严格遵循 [AGPL-3.0 协议](https://www.gnu.org/licenses/agpl-3.0.html)**，回馈开源社区；
-- 如果你因为任何原因，必须要闭源商用，无法执行 AGPL-3.0 协议，可以选择：
+- 本项目禁止闭源商用，如果你希望将其用于商业项目，请尊重开源，**严格遵循 [AGPL-3.0 协议](https://www.gnu.org/licenses/agpl-3.0.html)**，回馈开源社区；
+- 如果你因为任何原因，无法执行 AGPL-3.0 协议，可以选择：
     1. 使用早期的 Apache 2.0 协议版本 [（该版本最后更新时间为2022年5月，目前已停止维护，点击此处可下载代码）](https://github.com/pipipi-pikachu/PPTist/archive/f1a35bb8e045124e37dcafd6acbf40b4531b69aa.zip)；
-    2. 成为项目的重要贡献者（先违反协议后再成为贡献者不在此项范围），包括：
+    2. 成为项目的重要贡献者，包括：
         - 你的代码被本项目作为依赖引用，包括：npm安装、script/style等文件引用、代码片段引用（引用处会注明）；
-        - 你给本项目提交过重要的 PR 并且被合并（由作者主观判断）；
-        - 你长期参与到本项目的维护/推进工作中，如为本项目：提供了有效的周边工具、制作了大量模板等（由作者主观判断）；
+        - 你给本项目提交过重要的 PR 或 Issue（由作者主观判断，符合的 PR 或 Issue 会打上`important contribution`标签）；
+        - 先违反协议后再成为贡献者不适用此项；
     3. [邮件联系作者](mailto:pipipi_pikachu@163.com)付费获取独立的商业授权。独立授权价格：
-        - 一年1999元
-        - 三年2999元
-        - 永久5499元
-- 建议优先考虑执行AGPL-3.0 协议，如希望付费获取独立的商业授权，还请注意：
-    - 独立商业授权的意思是：单独授权您将代码用于商业行为且不必执行 AGPL-3.0 协议；
-    - 仅授权（而不是出售软件或服务），不存在其他“高级版本/付费版本”、不提供任何在线服务、不提供技术支持或技术咨询、不提供定制开发、不提供更多模板、更不提供可直接交付的产品；
-    - 该软件无法开箱即用，至少也需自行接入后端数据读取/存储相关能力。因此，使用本项目需要有最基本的web开发经验（能理解什么是前端&后端、数据从哪来&怎么存、什么是接口、什么是跨域等）；
-    - 授权后，仍禁止将源代码二次售卖、授权、开源或恶意传播；
-    - 授权后，如有需要可提供AIPPT相关后台逻辑和当前模板数据以供参考（但都非常简单，无任何核心逻辑，更建议自己实现）；
-    - 请务必提前做好调研，判断PPTist是否符合需求，无论是功能（是否能满足业务需求）还是开发（是否接受当前技术栈/实现方案）；
-    - 作者是异步沟通践行者，**不加微信/QQ/手机号等**，有任何授权相关疑问请邮件联系，提需求/报bug/询问技术方案等请在 [Issues](https://github.com/pipipi-pikachu/PPTist/issues) 中进行，谢谢理解。
+        - 一年2999元；
+        - 永久5499元（不含税）；
+        - 违反协议后被作者找到的，不适用于以上价格；
+- 建议优先考虑执行AGPL-3.0协议，如需付费获取独立的商业授权，还请注意：
+    - 独立商业授权表示：作者单独出具商业授权协议文件，允许将代码用于商业行为，且不必执行 AGPL-3.0 协议；
+    - 授权不等于出售软件或服务，不存在其他“商业版本”、不提供任何API/SDK/在线服务/技术支持/技术咨询/定制开发、也不提供可直接交付的产品；
+    - 该软件无法开箱即用，至少也得自行接入后端数据读取/存储相关能力。使用本项目需要有最基本的web开发经验（能理解什么是前端&后端、什么是接口/数据库、什么是跨域等）；
+    - 授权后，如有需要，作者可提供当前AIPPT相关后台代码以供参考（但都非常简单，无任何核心逻辑，更建议自己实现）；
+    - 请务必提前做好基础调研，判断PPTist是否符合需求，包括：功能（是否能满足业务需求）和开发（是否接受当前技术栈/实现方案）；
+    - 不接受[黑名单/耻辱柱](/doc/Blacklist.md)或存在违反协议行为的对象通过付费获取独立的商业授权或贡献代码；
+    - 作者倡导异步沟通（正式、信息量大、信息整合度高），**不加私人微信/QQ/手机号等**，有任何授权相关疑问请邮件联系，谢谢理解；
+    - 提需求/报bug/询问技术方案等非授权相关咨询，请在 [Issues](https://github.com/pipipi-pikachu/PPTist/issues) 中进行。作者不接受邮件提需求/报bug/询问技术方案。
 
 ---
 # 🔔 其他说明
 ## 什么是 AGPL-3.0 协议
 协议的核心要求用通俗的语言解释如下：
-- **开源义务**：如果你用了 AGPL 的代码，无论你或你的下游怎么使用/修改，都必须把你最终的代码全部完整公开出来（不只是给出修改的部分，也不是说换个框架重写一遍就能和原始代码脱离关系了），并继续以 AGPL 协议开源，保持开源的传染性。
-- **网络服务也要开源**：哪怕你只是用 AGPL 的代码做了一个网站或网络服务，别人通过网络用你的服务时，你也需要遵守上一条**开源义务**。
+- **开源义务**：如果你用了 AGPL 的代码，无论你或你的下游怎么使用/修改，都必须把你最终的代码全部完整公开出来（不只是给出修改的部分，也不是说换个框架重写一遍就能和原始代码脱离关系了），并继续以 AGPL 协议开源（强调：必须延续 AGPL 协议，保持开源的传染性，不能更换其他协议）。
+- **网络服务也要开源**：即使你只是用 AGPL 的代码做了一个网站或网络服务，别人通过网络用你的服务时，你也需要遵守上一条**开源义务**。
 - **保留版权声明**：你不能删掉代码里原来的作者信息和许可证声明，得告诉大家这代码是从哪儿来的。
-- **不能加额外限制**：你不能在 AGPL 代码上加一些限制，比如不让别人再分发，或者要求别人付费才能使用代码。
+- **不能加额外限制**：你不能在衍生出来的 AGPL 代码上加一些限制，比如不让别人再分发代码，或者要求别人付费才能使用代码（包括但不限于：要求别人购买授权/服务/产品等）。
 - **免责声明**：作者不保证代码没有 bug，也不对使用后果负责。
 
-详细协议内容见官方文档：[AGPL-3.0 协议](https://www.gnu.org/licenses/agpl-3.0.html)
+> 详细协议内容见官方文档：[AGPL-3.0 协议](https://www.gnu.org/licenses/agpl-3.0.html)
+
+## 声明
+Github、Gitee等代码托管平台存在一些仓库基于本项目代码进行了二次开发，但未遵守AGPL-3.0协议，擅自删除了AGPL-3.0协议许可证声明或改用其他协议，作者在此声明：**这些仓库的代码在事实上仍然属于AGPL-3.0协议，切勿受其误导。**
